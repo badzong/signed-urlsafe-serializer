@@ -41,7 +41,7 @@ class SignedURLSafeSerializer(object):
 
         return s
 
-    def dump(self, data):
+    def pack(self, data):
         dump = self.serializer.dumps(data)
 
         if self.compressor:
@@ -49,9 +49,9 @@ class SignedURLSafeSerializer(object):
 
         dump = base64.urlsafe_b64encode(dump).replace('=', '+')
 
-        return dump.rstrip('=')
+        return dump
 
-    def load(self, dump):
+    def unpack(self, dump):
         data = base64.urlsafe_b64decode(dump.replace('+', '='))
 
         if self.compressor:
@@ -69,14 +69,14 @@ class SignedURLSafeSerializer(object):
 
         return digest
 
-    def pack(self, data):
+    def dumps(self, data):
         salt = self.salt()
-        dump = self.dump(data)
+        dump = self.pack(data)
         digest = self.digest(dump, salt)
 
         return salt + digest + dump
 
-    def unpack(self, packed):
+    def loads(self, packed):
         salt = packed[:self.salt_len]
         digest = packed[self.salt_len:self.salt_len + self.hash_len]
         dump = packed[self.salt_len + self.hash_len:]
@@ -84,18 +84,18 @@ class SignedURLSafeSerializer(object):
         if digest != self.digest(dump, salt):
             raise BadDataError, 'Corrupt or tampered datastring'
 
-        return self.load(dump)
+        return self.unpack(dump)
 
 
 
 if __name__ == '__main__':
+
     formdata = {
         'email':  'john@example.org',
         'password':  'example',
     }
 
     s = SignedURLSafeSerializer('Put your secret here.')
-    packed = s.pack(formdata)
-
+    packed = s.dumps(formdata)
     print packed
-    print s.unpack(packed)
+    print s.loads(packed)

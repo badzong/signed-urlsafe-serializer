@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(name='signed-urlsafe-serializer',
       version='0.1',
-      description='Serialize and sign a python dictionary and pack it into a url safe string. Useful for storing data completely on the client side. E.g. user activation without any data in your database.',
+      description='Serialize and sign a python object and pack it into a url safe string. Useful for storing data completely on the client side. E.g. user activation without any data in your database.',
       author='Manuel Badzong',
       author_email='manuel@andev.ch',
       url='https://github.com/badzong/signed-urlsafe-serializer.git',
